@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'RxPlayer_Example' do
+  pod 'RxPlayer', :path => '../'
+
+  target 'RxPlayer_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
