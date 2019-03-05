@@ -9,22 +9,22 @@ import RxSwift
 
 extension ObservableType {
 
-    public func filterNil<T>() -> Observable<T?> where E == T? {
+    func filterNil<T>() -> Observable<T?> where E == T? {
         return filter { $0 == nil }
     }
 
-    public func mapToVoid() -> Observable<()> {
+    func mapToVoid() -> Observable<()> {
         return mapTo(())
     }
 }
 
 extension ObservableType where E == Bool {
 
-    public func filterTrue() -> Observable<Bool> {
+    func filterTrue() -> Observable<Bool> {
         return filter { $0 }
     }
 
-    public func filterFalse() -> Observable<Bool> {
+    func filterFalse() -> Observable<Bool> {
         return filter { !$0 }
     }
 }
