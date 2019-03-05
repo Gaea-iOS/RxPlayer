@@ -1,12 +1,13 @@
 //
 //  AppDelegate.swift
-//  RxPlayer
+//  PPPlayer
 //
-//  Created by wangxiaotao on 02/20/2019.
+//  Created by wangxiaotao on 02/18/2019.
 //  Copyright (c) 2019 wangxiaotao. All rights reserved.
 //
 
 import UIKit
+import RxPlayer
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,6 +17,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        let a: Int64 = 5
+        let b: Int64? = 5
+        if a == b {
+            print("true")
+        } else {
+            print("false")
+        }
+        player.setupRemoteControls()
         return true
     }
 
@@ -40,7 +49,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
-
 }
 

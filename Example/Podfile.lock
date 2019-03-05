@@ -1,0 +1,59 @@
+PODS:
+  - ReachabilitySwift (4.3.0)
+  - RxAppState (1.3.0):
+    - RxCocoa (~> 4.3)
+    - RxSwift (~> 4.3)
+  - RxAtomic (4.4.0)
+  - RxCocoa (4.4.0):
+    - RxSwift (~> 4.0)
+  - RxPlayer (0.1.0):
+    - RxAppState
+    - RxCocoa (~> 4.4)
+    - RxReachability (~> 0.1.7)
+    - RxSwift (~> 4.4)
+    - RxSwiftExt (~> 3.4)
+  - RxReachability (0.1.7):
+    - ReachabilitySwift (~> 4.3.0)
+    - RxCocoa (~> 4)
+    - RxSwift (~> 4)
+  - RxSwift (4.4.0):
+    - RxAtomic (~> 4.4)
+  - RxSwiftExt (3.4.0):
+    - RxSwiftExt/Core (= 3.4.0)
+    - RxSwiftExt/RxCocoa (= 3.4.0)
+  - RxSwiftExt/Core (3.4.0):
+    - RxSwift (~> 4.0)
+  - RxSwiftExt/RxCocoa (3.4.0):
+    - RxCocoa (~> 4.0)
+    - RxSwiftExt/Core
+
+DEPENDENCIES:
+  - RxPlayer (from `../`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - ReachabilitySwift
+    - RxAppState
+    - RxAtomic
+    - RxCocoa
+    - RxReachability
+    - RxSwift
+    - RxSwiftExt
+
+EXTERNAL SOURCES:
+  RxPlayer:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  ReachabilitySwift: 408477d1b6ed9779dba301953171e017c31241f3
+  RxAppState: 5d6e04271e66dc496d6d2aac2d92f06ef0f0ae41
+  RxAtomic: eacf60db868c96bfd63320e28619fe29c179656f
+  RxCocoa: df63ebf7b9a70d6b4eeea407ed5dd4efc8979749
+  RxPlayer: 8e07f8b3e4dead1b25545840af129ef664dc6692
+  RxReachability: 899637fce53e076465126e58d71ad835fce17924
+  RxSwift: 5976ecd04fc2fefd648827c23de5e11157faa973
+  RxSwiftExt: 01f8ecbeeb355698e9c75365ebe908b00dacf45d
+
+PODFILE CHECKSUM: dcfe7152f9496bb27d6ee62bca538ed2eb64caeb
+
+COCOAPODS: 1.5.3
