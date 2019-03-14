@@ -11,7 +11,7 @@ import RxSwiftExt
 import AVFoundation
 import Reachability
 import RxReachability
-import RxAppState
+//import RxAppState
 
 public class RxPlayer {
 

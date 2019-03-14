@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'RxPlayer'
-  s.version          = '0.2.4'
+  s.version          = '0.2.6'
   s.summary          = 'A short description of RxPlayer.'
 
 # This description is used to generate tags and improve search results.
@@ -45,6 +45,6 @@ TODO: Add long description of the pod here.
   s.dependency 'RxCocoa', '~> 4.4'
   s.dependency 'RxSwiftExt', '~> 3.4'
   s.dependency 'RxReachability', '~> 0.1.7'
-  s.dependency 'RxAppState'
+  #s.dependency 'RxAppState'
   
 end
