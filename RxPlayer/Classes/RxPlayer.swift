@@ -55,7 +55,7 @@ public class RxPlayer {
 
     public var progress: Observable<Float> {
         return playedTime
-            .withLatestFrom(duration) { (playedTime: $1, duration: $0) }
+            .withLatestFrom(duration) { (playedTime: $0, duration: $1) }
             .map { $0.duration == 0 ? 0 : Float($0.playedTime / $0.duration) }
     }
 
