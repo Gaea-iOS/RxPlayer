@@ -53,6 +53,12 @@ public class RxPlayer {
         return _playedTime.asObservable()
     }
 
+    public var progress: Observable<Float> {
+        return playedTime
+            .withLatestFrom(duration) { (playedTime: $1, duration: $0) }
+            .map { $0.duration == 0 ? 0 : Float($0.playedTime / $0.duration) }
+    }
+
     public var loadTimeRanges: Observable<[CMTimeRange]> {
         return _loadTimeRanges.asObservable()
     }
