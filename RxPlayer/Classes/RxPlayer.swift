@@ -93,9 +93,9 @@ public class RxPlayer {
 
     private let disposeBag = DisposeBag()
 
-    private var isBackgroundModeEnabled = true
-
-    private var backgroundTaskCreator = BackgroundTaskCreator()
+//    private var isBackgroundModeEnabled = true
+//
+//    private var backgroundTaskCreator = BackgroundTaskCreator()
 
     public init() {
 
@@ -236,29 +236,30 @@ public class RxPlayer {
 
             UIApplication.shared.beginReceivingRemoteControlEvents()
 
-            item
-                .subscribe(onNext: {
-                    let session = AVAudioSession.sharedInstance()
-                    try? session.setCategory(.playback, mode: .default, options: [])
-                    try? session.setActive($0 == nil ? false : true)
-                })
-                .disposed(by: disposeBag)
-
-            UIApplication.shared.rx
-                .applicationDidEnterBackground
-                .withLatestFrom(_isPlaying)
-                .filterTrue()
-                .subscribe(onNext: { [unowned self] _ in
-                    self.isBackgroundModeEnabled ? self.backgroundTaskCreator.beginBackgroundTask() : ()
-                })
-                .disposed(by: disposeBag)
-
-            UIApplication.shared.rx
-                .applicationWillEnterForeground
-                .subscribe(onNext: { [unowned self] _ in
-                    self.backgroundTaskCreator.endBackgroundTask()
-                })
-                .disposed(by: disposeBag)
+            // 以下应该属于业务逻辑，不放在公共库里
+//            item
+//                .subscribe(onNext: {
+//                    let session = AVAudioSession.sharedInstance()
+//                    try? session.setCategory(.playback, mode: .default, options: [])
+//                    try? session.setActive($0 == nil ? false : true)
+//                })
+//                .disposed(by: disposeBag)
+//
+//            UIApplication.shared.rx
+//                .applicationDidEnterBackground
+//                .withLatestFrom(_isPlaying)
+//                .filterTrue()
+//                .subscribe(onNext: { [unowned self] _ in
+//                    self.isBackgroundModeEnabled ? self.backgroundTaskCreator.beginBackgroundTask() : ()
+//                })
+//                .disposed(by: disposeBag)
+//
+//            UIApplication.shared.rx
+//                .applicationWillEnterForeground
+//                .subscribe(onNext: { [unowned self] _ in
+//                    self.backgroundTaskCreator.endBackgroundTask()
+//                })
+//                .disposed(by: disposeBag)
         }
     }
 }
@@ -288,9 +289,9 @@ extension RxPlayer {
         player.play()
         _isPlaying.accept(true)
 
-        if isBackgroundModeEnabled {
-            backgroundTaskCreator.beginBackgroundTask()
-        }
+//        if isBackgroundModeEnabled {
+//            backgroundTaskCreator.beginBackgroundTask()
+//        }
     }
 
     private func stopPlay() {
@@ -298,7 +299,7 @@ extension RxPlayer {
         player.replaceCurrentItem(with: nil)
         _isPlaying.accept(false)
 
-        backgroundTaskCreator.endBackgroundTask()
+//        backgroundTaskCreator.endBackgroundTask()
     }
 }
 
