@@ -21,9 +21,9 @@ public class RxPlayer {
         case failed
     }
 
-    public let isAutoPlay: Bool = true
+    public var isAutoPlay: Bool = true
 
-    public let isAutoPlayWhenSeek: Bool = true
+    private let isAutoPlayWhenSeek: Bool = true
     
     public let item = BehaviorRelay<PlayerItem?>(value: nil)
 
