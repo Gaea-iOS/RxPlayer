@@ -49,7 +49,7 @@
 		1B8F4CC4BE7C37D93FE03FA0FE56632A /* _RXDelegateProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = AC9838947FE2D65B8B0E6E73E565FAF4 /* _RXDelegateProxy.m */; };
 		1BC05B56902FF097A42CD20E1E89043C /* ConcurrentMainScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F9E5FE3D2B9F032CEDE3090314C9607 /* ConcurrentMainScheduler.swift */; };
 		1BCC2F19D13C764F824B3EF22A0060DD /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DFC9A880F84C4DCABD4F6C5A413ED7B /* Foundation.framework */; };
-		1BFA9AEA2248D9030087DADE /* RxPlayer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BFA9AE92248D9030087DADE /* RxPlayer+Extension.swift */; };
+		1BFA9AEA2248D9030087DADE /* RxPlayer+BackgroundMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BFA9AE92248D9030087DADE /* RxPlayer+BackgroundMode.swift */; };
 		1C62C9BA55D7A67D769AB6B0FCDD8C64 /* Driver+Subscription.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5945DA080F8A10A4030E4BA80E8FDB6 /* Driver+Subscription.swift */; };
 		1C6CF31514599EA5575AD83021A15DF4 /* Reduce.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72DDE93F4BA3CCCED90274C8256F8850 /* Reduce.swift */; };
 		1CDDCC6633C712126588BCCF6AFCEDBE /* UIButton+Rx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 156E113EF397DBB5E9F18ACCC8E787DC /* UIButton+Rx.swift */; };
@@ -645,7 +645,7 @@
 		1B054C5F222E123100BD7C3E /* CMTime+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CMTime+Extension.swift"; path = "RxPlayer/Classes/CMTime+Extension.swift"; sourceTree = "<group>"; };
 		1B054C61222E125C00BD7C3E /* Reachability+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Reachability+Extension.swift"; path = "RxPlayer/Classes/Reachability+Extension.swift"; sourceTree = "<group>"; };
 		1B1DE06F51C20693B9FF4A5E8C0B7D90 /* UIApplication+Rx.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIApplication+Rx.swift"; path = "RxCocoa/iOS/UIApplication+Rx.swift"; sourceTree = "<group>"; };
-		1BFA9AE92248D9030087DADE /* RxPlayer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "RxPlayer+Extension.swift"; path = "RxPlayer/Classes/RxPlayer+Extension.swift"; sourceTree = "<group>"; };
+		1BFA9AE92248D9030087DADE /* RxPlayer+BackgroundMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "RxPlayer+BackgroundMode.swift"; path = "RxPlayer/Classes/RxPlayer+BackgroundMode.swift"; sourceTree = "<group>"; };
 		1C65EECC7DB5CA2A8BA5AC98E09B05EF /* Reactive.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Reactive.swift; path = RxSwift/Reactive.swift; sourceTree = "<group>"; };
 		1E4D00C35C6633A9DFB22AE09197EA80 /* UIViewController+Rx.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIViewController+Rx.swift"; path = "RxCocoa/iOS/UIViewController+Rx.swift"; sourceTree = "<group>"; };
 		1E4F69C577F700B3A6CE396973AA50D9 /* UIView+Rx.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIView+Rx.swift"; path = "RxCocoa/iOS/UIView+Rx.swift"; sourceTree = "<group>"; };
@@ -1698,7 +1698,7 @@
 				DE49D1A4E866DD1D682EE790D92B3656 /* AVPlayerItem+Rx.swift */,
 				1B054C57222E111B00BD7C3E /* PlayerItem.swift */,
 				10AF799808FE43279AA36F86C396ACDA /* RxPlayer.swift */,
-				1BFA9AE92248D9030087DADE /* RxPlayer+Extension.swift */,
+				1BFA9AE92248D9030087DADE /* RxPlayer+BackgroundMode.swift */,
 				565382C07E1F1E21EFC02CC73D01EB20 /* RxQueuePlayer.swift */,
 				1B054C5D222E121200BD7C3E /* ObservableType+Extension.swift */,
 				1B054C5F222E123100BD7C3E /* CMTime+Extension.swift */,
@@ -2449,7 +2449,7 @@
 				1B054C5E222E121200BD7C3E /* ObservableType+Extension.swift in Sources */,
 				1B054C5C222E118D00BD7C3E /* BackgroundTaskCreator.swift in Sources */,
 				1B054C58222E111B00BD7C3E /* PlayerItem.swift in Sources */,
-				1BFA9AEA2248D9030087DADE /* RxPlayer+Extension.swift in Sources */,
+				1BFA9AEA2248D9030087DADE /* RxPlayer+BackgroundMode.swift in Sources */,
 				83F5A648B6DAFBC2C907DED0F216679E /* RxPlayer.swift in Sources */,
 				947BF4AE373B9F5EE546A3D9DFF9AB0D /* RxQueuePlayer.swift in Sources */,
 			);

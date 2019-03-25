@@ -1,5 +1,5 @@
 //
-//  RxPlayer+Extension.swift
+//  RxPlayer+BackgroundMode.swift
 //  RxPlayer
 //
 //  Created by 王小涛 on 2019/3/25.
