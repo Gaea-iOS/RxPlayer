@@ -11,21 +11,20 @@ import RxSwiftExt
 import AVFoundation
 import Reachability
 import RxReachability
-//import RxAppState
 
-public class RxPlayer {
+public enum RxPlayerStatus: String {
+    case unknown
+    case readyToPlay
+    case failed
+}
 
-    public enum Status: String {
-        case unknown
-        case readyToPlay
-        case failed
-    }
+public class RxPlayer<T: PlayerItem> {
 
     public var isAutoPlay: Bool = true
 
     private let isAutoPlayWhenSeek: Bool = true
     
-    public let item = BehaviorRelay<PlayerItem?>(value: nil)
+    public let item = PublishSubject<T>()
 
     public let play = PublishSubject<()>()
 
@@ -67,7 +66,7 @@ public class RxPlayer {
         return _didPlayToEndTime.asObservable()
     }
 
-    public let _status = BehaviorRelay(value: Status.unknown)
+    public let _status = BehaviorRelay(value: RxPlayerStatus.unknown)
 
     private let _isPlaying = BehaviorRelay(value: false)
 
@@ -91,11 +90,7 @@ public class RxPlayer {
 
     private let reachability = Reachability()!
 
-    private let disposeBag = DisposeBag()
-
-//    private var isBackgroundModeEnabled = true
-//
-//    private var backgroundTaskCreator = BackgroundTaskCreator()
+    let disposeBag = DisposeBag()
 
     public init() {
 
@@ -128,7 +123,7 @@ public class RxPlayer {
                 .do(onNext: { [unowned self] _ in
                     self.pause.onNext(())
                 })
-                .map { $0?.toAVPlayerItem }
+                .map { $0.toAVPlayerItem }
                 .subscribe(onNext: { [unowned self] in
                     self._playerItem.accept($0)
                     if self.isAutoPlay {
@@ -210,14 +205,12 @@ public class RxPlayer {
                     .skip(1)
                     .filterTrue()
                     .withLatestFrom(_isPlaybackLikelyToKeepUp)
-                    .filterFalse()
-                    .debug("isReachable"),
+                    .filterFalse(),
 
                 _isPlaybackLikelyToKeepUp
                     .distinctUntilChanged()
                     .skip(1)
                     .filterTrue()
-                    .debug("_isPlaybackLikelyToKeepUp")
                 )
                 .mapToVoid()
                 .do(onNext: { [unowned self] in
@@ -231,36 +224,6 @@ public class RxPlayer {
                 })
                 .disposed(by: disposeBag)
         }
-
-        do {
-
-            UIApplication.shared.beginReceivingRemoteControlEvents()
-
-            // 以下应该属于业务逻辑，不放在公共库里
-//            item
-//                .subscribe(onNext: {
-//                    let session = AVAudioSession.sharedInstance()
-//                    try? session.setCategory(.playback, mode: .default, options: [])
-//                    try? session.setActive($0 == nil ? false : true)
-//                })
-//                .disposed(by: disposeBag)
-//
-//            UIApplication.shared.rx
-//                .applicationDidEnterBackground
-//                .withLatestFrom(_isPlaying)
-//                .filterTrue()
-//                .subscribe(onNext: { [unowned self] _ in
-//                    self.isBackgroundModeEnabled ? self.backgroundTaskCreator.beginBackgroundTask() : ()
-//                })
-//                .disposed(by: disposeBag)
-//
-//            UIApplication.shared.rx
-//                .applicationWillEnterForeground
-//                .subscribe(onNext: { [unowned self] _ in
-//                    self.backgroundTaskCreator.endBackgroundTask()
-//                })
-//                .disposed(by: disposeBag)
-        }
     }
 }
 
@@ -273,9 +236,14 @@ extension RxPlayer {
             return
         }
 
-        if playerItem.status == .failed,
-            let newPlayerItem = item.value?.toAVPlayerItem {
-            _playerItem.accept(newPlayerItem)
+        if playerItem.status == .failed {
+
+            Observable.just(())
+                .withLatestFrom(item)
+                .map { $0.toAVPlayerItem }
+                .bind(to: _playerItem)
+                .disposed(by: disposeBag)
+
             isItemReloadNeeded = true
         }
 
@@ -288,18 +256,12 @@ extension RxPlayer {
 
         player.play()
         _isPlaying.accept(true)
-
-//        if isBackgroundModeEnabled {
-//            backgroundTaskCreator.beginBackgroundTask()
-//        }
     }
 
     private func stopPlay() {
         player.pause()
         player.replaceCurrentItem(with: nil)
         _isPlaying.accept(false)
-
-//        backgroundTaskCreator.endBackgroundTask()
     }
 }
 
@@ -339,7 +301,7 @@ extension RxPlayer {
 
 
 extension AVPlayer.Status {
-    func toRxPlayerStatus() -> RxPlayer.Status {
+    func toRxPlayerStatus() -> RxPlayerStatus {
         switch self {
         case .unknown:
             return .unknown
@@ -352,7 +314,7 @@ extension AVPlayer.Status {
 }
 
 extension AVPlayerItem.Status {
-    func toRxPlayerStatus() -> RxPlayer.Status {
+    func toRxPlayerStatus() -> RxPlayerStatus {
         switch self {
         case .unknown:
             return .unknown

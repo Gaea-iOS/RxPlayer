@@ -7,7 +7,9 @@
 
 class BackgroundTaskCreator {
 
-    private let backgroundTaskCreator = UIApplication.shared
+    static let shared = BackgroundTaskCreator()
+
+    private init() {}
 
     private var taskID = UIBackgroundTaskIdentifier.invalid
 

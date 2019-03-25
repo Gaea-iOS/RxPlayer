@@ -7,7 +7,7 @@
 
 import AVFoundation
 
-public protocol PlayerItem {
+public protocol PlayerItem: Equatable {
     var playURL: URL { get }
 }
 

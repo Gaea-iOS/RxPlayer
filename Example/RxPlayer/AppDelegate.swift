@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else {
             print("false")
         }
-        player.setupRemoteControls()
+//        player.setupRemoteControls()
         return true
     }
 

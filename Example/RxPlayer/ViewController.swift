@@ -19,7 +19,10 @@ extension String: PlayerItem {
 }
 
 struct Course: PlayerItemArrayQueue {
-    var items: [PlayerItem] {
+
+    typealias T = String
+
+    var items: [T] {
         return ["http://aliuwmp3.changba.com/userdata/video/45F6BD5E445E4C029C33DC5901307461.mp4",
          "http://aliuwmp3.changba.com/userdata/video/3B1DDE764577E0529C33DC5901307461.mp4",
          "http://lzaiuw.changba.com/userdata/video/940071102.mp4",
@@ -27,8 +30,7 @@ struct Course: PlayerItemArrayQueue {
     }
 }
 
-let player = RxQueuePlayer()
-
+let player = RxQueuePlayer<Course, String>()
 
 class ViewController: UIViewController {
 
@@ -46,7 +48,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var nextButton: UIButton!
     @IBOutlet weak var previousButton: UIButton!
 
-    private let queue: PlayerItemArrayQueue = Course()
+    private let queue = Course()
 
 
     private let disposeBag = DisposeBag()
@@ -65,6 +67,13 @@ class ViewController: UIViewController {
             .disposed(by: disposeBag)
 
         player.queue.onNext(queue)
+
+        Observable.just(())
+            .delay(0.1, scheduler: MainScheduler.instance)
+            .subscribe(onNext: { 
+                player.item.onNext(self.queue.items.first!)
+            })
+            .disposed(by: disposeBag)
 
         player.duration.map(String.init)
             .asDriver(onErrorJustReturn: "")
@@ -107,7 +116,6 @@ class ViewController: UIViewController {
 
         player
             ._status
-            .debug("received state")
             .map { $0.rawValue }
             .bind(to: stateLabel.rx.text)
             .disposed(by: disposeBag)
@@ -136,6 +144,7 @@ class ViewController: UIViewController {
             .disposed(by: disposeBag)
 
         player.hasNextItem
+            .debug("accept hasNextItem")
             .bind(to: nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
 
@@ -158,7 +167,7 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: UITableViewDataSource {
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return queue.items.count
     }
@@ -170,6 +179,12 @@ extension ViewController: UITableViewDataSource {
             cell = UITableViewCell(style: .default, reuseIdentifier: "cell")
         }
         cell!.textLabel?.text = item.playURL.absoluteString
+        player.item
+            .map { $0 == item }
+            .subscribe(onNext: {
+                cell!.textLabel?.textColor = $0 ? .red : .gray
+            })
+            .disposed(by: disposeBag)
         return cell!
     }
 }
@@ -177,7 +192,7 @@ extension ViewController: UITableViewDataSource {
 extension ViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        player.item.accept(queue.items[indexPath.row])
+        player.item.onNext(queue.items[indexPath.row])
     }
 }
 
@@ -185,7 +200,7 @@ import MediaPlayer
 
 extension MPNowPlayingInfoCenter {
 
-    func updatePlayingCenter(with item: PlayerItem?, duration: TimeInterval, progression: TimeInterval, rate: Float) {
+    func updatePlayingCenter(with item: String?, duration: TimeInterval, progression: TimeInterval, rate: Float) {
         if let item = item {
             var info: [String: Any] = [:]
             info[MPMediaItemPropertyTitle] = "title"
