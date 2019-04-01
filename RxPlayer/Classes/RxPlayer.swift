@@ -80,7 +80,7 @@ public class RxPlayer<T: PlayerItem> {
 
     private let player = AVPlayer()
 
-    private let _playerItem = BehaviorRelay<AVPlayerItem?>(value: nil)
+    private let _playerItem = PublishSubject<AVPlayerItem>()
 
     private var isItemReloadNeeded: Bool = false
 
@@ -121,7 +121,7 @@ public class RxPlayer<T: PlayerItem> {
                 })
                 .map { $0.toAVPlayerItem }
                 .subscribe(onNext: { [unowned self] in
-                    self._playerItem.accept($0)
+                    self._playerItem.onNext($0)
                     if self.isAutoPlay {
                         self.play()
                     }
@@ -131,32 +131,30 @@ public class RxPlayer<T: PlayerItem> {
 
         do {
 
-            let playerItem = _playerItem.unwrap().share()
-
-            playerItem
+            _playerItem
                 .flatMapLatest { $0.rx.didPlayToEnd }
                 .mapToVoid()
                 .bind(to: _didPlayToEndTime)
                 .disposed(by: disposeBag)
 
-            playerItem
+            _playerItem
                 .flatMapLatest { $0.rx.duration }
                 .map { $0.timeIntervalValue }
                 .bind(to: _duration)
                 .disposed(by: disposeBag)
 
-            playerItem
+            _playerItem
                 .flatMapLatest { $0.rx.isPlaybackLikelyToKeepUp }
                 .bind(to: _isPlaybackLikelyToKeepUp)
                 .disposed(by: disposeBag)
 
-            playerItem
+            _playerItem
                 .flatMapLatest { $0.rx.loadedTimeRanges }
                 .map { $0.compactMap { $0.timeRangeValue } }
                 .bind(to: _loadTimeRanges)
                 .disposed(by: disposeBag)
 
-            playerItem
+            _playerItem
                 .flatMapLatest { $0.rx.status }
                 .map { $0.toRxPlayerStatus() }
                 .bind(to: _status)
@@ -216,30 +214,37 @@ extension RxPlayer {
 
     public func play() {
 
-        guard let playerItem = _playerItem.value else {
-            return
+        Observable.just(())
+            .withLatestFrom(_playerItem)
+            .subscribe(onNext: {
+                play(playerItem: $0)
+            })
+            .disposed(by: disposeBag)
+
+
+        func play(playerItem: AVPlayerItem) {
+
+            if playerItem.status == .failed {
+
+                Observable.just(())
+                    .withLatestFrom(item)
+                    .map { $0.toAVPlayerItem }
+                    .bind(to: _playerItem)
+                    .disposed(by: disposeBag)
+
+                isItemReloadNeeded = true
+            }
+
+            if isItemReloadNeeded {
+                player.replaceCurrentItem(with: nil)
+                isItemReloadNeeded = false
+            }
+
+            player.replaceCurrentItem(with: playerItem)
+
+            player.play()
+            _isPlaying.accept(true)
         }
-
-        if playerItem.status == .failed {
-
-            Observable.just(())
-                .withLatestFrom(item)
-                .map { $0.toAVPlayerItem }
-                .bind(to: _playerItem)
-                .disposed(by: disposeBag)
-
-            isItemReloadNeeded = true
-        }
-
-        if isItemReloadNeeded {
-            player.replaceCurrentItem(with: nil)
-            isItemReloadNeeded = false
-        }
-
-        player.replaceCurrentItem(with: _playerItem.value)
-
-        player.play()
-        _isPlaying.accept(true)
     }
 
     public func pause() {

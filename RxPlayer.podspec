@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'RxPlayer'
-  s.version          = '0.4.6'
+  s.version          = '0.4.8'
   s.summary          = 'A short description of RxPlayer.'
 
 # This description is used to generate tags and improve search results.
