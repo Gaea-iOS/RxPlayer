@@ -43,7 +43,7 @@ extension PlayerItemArrayQueue {
 
 public class RxQueuePlayer<Q: PlayerItemQueue, T>: RxPlayer<T> where Q.T == T {
 
-    public private(set) var queue = PublishSubject<Q>()
+    public let queue = PublishSubject<Q>()
 
     public let next = PublishSubject<()>()
     public let previous = PublishSubject<()>()
