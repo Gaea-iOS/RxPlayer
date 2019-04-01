@@ -117,7 +117,7 @@ public class RxPlayer<T: PlayerItem> {
         do {
             item
                 .do(onNext: { [unowned self] _ in
-                    self.stop()
+                    self.pause()
                 })
                 .map { $0.toAVPlayerItem }
                 .subscribe(onNext: { [unowned self] in
@@ -246,11 +246,6 @@ extension RxPlayer {
         player.pause()
         player.replaceCurrentItem(with: nil)
         _isPlaying.accept(false)
-    }
-
-    public func stop() {
-        pause()
-        _playerItem.accept(nil)
     }
 }
 
