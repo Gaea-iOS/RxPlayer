@@ -28,6 +28,8 @@ public class RxPlayer<T: PlayerItem> {
 
     public let seek = PublishSubject<TimeInterval>()
 
+    public let rate = PublishSubject<Float>()
+
     public var isPlaying: Observable<Bool> {
         return _isPlaying.distinctUntilChanged()
     }
@@ -174,6 +176,12 @@ public class RxPlayer<T: PlayerItem> {
                     self.player.seek(to: $0, completionHandler: { [unowned self] _ in
                         self._isSeeking.accept(false)
                     })
+                })
+                .disposed(by: disposeBag)
+
+            rate
+                .subscribe(onNext: { [unowned self] in
+                    self.player.rate = $0
                 })
                 .disposed(by: disposeBag)
         }
