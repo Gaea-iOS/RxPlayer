@@ -60,16 +60,14 @@ class ViewController: UIViewController {
 
         player.isAutoPlay = false
 
-        playButton.rx.tap
-            .subscribe(onNext: {
-                player.play()
-            })
+        playButton.rx
+            .tap
+            .bind(to: player.play)
             .disposed(by: disposeBag)
 
-        pauseButton.rx.tap
-            .subscribe(onNext: {
-                player.pause()
-            })
+        pauseButton.rx
+            .tap
+            .bind(to: player.pause)
             .disposed(by: disposeBag)
 
         player.queue.onNext(queue)
@@ -81,15 +79,15 @@ class ViewController: UIViewController {
             })
             .disposed(by: disposeBag)
 
-//        player.duration.map(String.init())
-//            .asDriver(onErrorJustReturn: "")
-//            .drive(durationLabel.rx.text)
-//            .disposed(by: disposeBag)
-//
-//        player.playedTime.map(String.init())
-//            .asDriver(onErrorJustReturn: "")
-//            .drive(playedTimeLabel.rx.text)
-//            .disposed(by: disposeBag)
+        player.duration.map {String($0)}
+            .asDriver(onErrorJustReturn: "")
+            .drive(durationLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        player.playedTime.map {String($0)}
+            .asDriver(onErrorJustReturn: "")
+            .drive(playedTimeLabel.rx.text)
+            .disposed(by: disposeBag)
 
         player.playedTime
             .withLatestFrom(player.duration) { ($0, $1) }

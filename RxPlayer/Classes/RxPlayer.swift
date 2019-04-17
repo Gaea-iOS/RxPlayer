@@ -26,6 +26,10 @@ public class RxPlayer<T: PlayerItem> {
     
     public let item = PublishSubject<T>()
 
+    public let play = PublishSubject<()>()
+
+    public let pause = PublishSubject<()>()
+
     public let seek = PublishSubject<TimeInterval>()
 
     public let rate = PublishSubject<Float>()
@@ -119,13 +123,13 @@ public class RxPlayer<T: PlayerItem> {
         do {
             item
                 .do(onNext: { [unowned self] _ in
-                    self.pause()
+                    self.pause.onNext(())
                 })
                 .map { $0.toAVPlayerItem }
                 .subscribe(onNext: { [unowned self] in
                     self._playerItem.onNext($0)
                     if self.isAutoPlay {
-                        self.play()
+                        self.play.onNext(())
                     }
                 })
                 .disposed(by: disposeBag)
@@ -164,6 +168,37 @@ public class RxPlayer<T: PlayerItem> {
         }
 
         do {
+            play
+                .withLatestFrom(Observable.combineLatest(_playerItem, item))
+                .do(onNext: { [unowned self] (playerItem, item) in
+                    if playerItem.status == .failed {
+                        self._playerItem.onNext(item.toAVPlayerItem)
+                        self.isItemReloadNeeded = true
+                    }
+                })
+                .do(onNext: { [unowned self] (playerItem, _) in
+                    if self.isItemReloadNeeded {
+                        self.player.replaceCurrentItem(with: nil)
+                        self.isItemReloadNeeded = false
+                    }
+                    self.player.replaceCurrentItem(with: playerItem)
+                })
+                .subscribe(onNext: { [unowned self] _ in
+                    self.player.play()
+                    self._isPlaying.accept(true)
+                })
+                .disposed(by: disposeBag)
+
+            pause
+                .subscribe(onNext: { [unowned self] in
+                    self.player.pause()
+                    self.player.replaceCurrentItem(with: nil)
+                    self._isPlaying.accept(false)
+                })
+                .disposed(by: disposeBag)
+        }
+
+        do {
 
             seek
                 .filter { !$0.isNaN || $0.isInfinite }
@@ -171,7 +206,7 @@ public class RxPlayer<T: PlayerItem> {
                 .subscribe(onNext: { [unowned self] in
                     self._isSeeking.accept(true)
                     if self.isAutoPlayWhenSeek {
-                        self.play()
+                        self.play.onNext(())
                     }
                     self.player.seek(to: $0, completionHandler: { [unowned self] _ in
                         self._isSeeking.accept(false)
@@ -210,55 +245,10 @@ public class RxPlayer<T: PlayerItem> {
                 .filterTrue()
                 .mapToVoid()
                 .subscribe(onNext: { [unowned self] in
-                    self.play()
+                    self.play.onNext(())
                 })
                 .disposed(by: disposeBag)
         }
-    }
-}
-
-
-extension RxPlayer {
-
-    public func play() {
-
-        Observable.just(())
-            .withLatestFrom(_playerItem)
-            .subscribe(onNext: {
-                play(playerItem: $0)
-            })
-            .disposed(by: disposeBag)
-
-
-        func play(playerItem: AVPlayerItem) {
-
-            if playerItem.status == .failed {
-
-                Observable.just(())
-                    .withLatestFrom(item)
-                    .map { $0.toAVPlayerItem }
-                    .bind(to: _playerItem)
-                    .disposed(by: disposeBag)
-
-                isItemReloadNeeded = true
-            }
-
-            if isItemReloadNeeded {
-                player.replaceCurrentItem(with: nil)
-                isItemReloadNeeded = false
-            }
-
-            player.replaceCurrentItem(with: playerItem)
-
-            player.play()
-            _isPlaying.accept(true)
-        }
-    }
-
-    public func pause() {
-        player.pause()
-        player.replaceCurrentItem(with: nil)
-        _isPlaying.accept(false)
     }
 }
 
@@ -273,11 +263,11 @@ extension RxPlayer {
 
         switch type {
         case .began:
-            DispatchQueue.main.async { self.pause() }
+            DispatchQueue.main.async { self.pause.onNext(()) }
         case .ended:
             guard let optionsValue = userInfo[AVAudioSessionInterruptionOptionKey] as? UInt else { break }
             let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
-            DispatchQueue.main.async { options.contains(.shouldResume) ? self.play() : self.pause() }
+            DispatchQueue.main.async { options.contains(.shouldResume) ? self.play.onNext(()) : self.pause.onNext(()) }
         }
     }
 
@@ -290,7 +280,7 @@ extension RxPlayer {
         case .oldDeviceUnavailable:
             guard let previousRoute = userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription else { return }
             let headphonesConnected = previousRoute.outputs.map { $0.portType }.contains(.headphones)
-            DispatchQueue.main.async { headphonesConnected ? () : self.pause() }
+            DispatchQueue.main.async { headphonesConnected ? () : self.pause.onNext(()) }
         default: break
         }
     }
