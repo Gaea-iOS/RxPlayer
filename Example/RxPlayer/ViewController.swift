@@ -58,7 +58,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        player.isAutoPlay = false
+        player.isAutoPlay = true
 
         playButton.rx
             .tap

@@ -126,12 +126,12 @@ public class RxPlayer<T: PlayerItem> {
                     self.pause.onNext(())
                 })
                 .map { $0.toAVPlayerItem }
-                .subscribe(onNext: { [unowned self] in
+                .do(onNext: { [unowned self] in
                     self._playerItem.onNext($0)
-                    if self.isAutoPlay {
-                        self.play.onNext(())
-                    }
                 })
+                .mapToVoid()
+                .filter { [unowned self] _ in self.isAutoPlay }
+                .bind(to: play)
                 .disposed(by: disposeBag)
         }
 
@@ -168,15 +168,23 @@ public class RxPlayer<T: PlayerItem> {
         }
 
         do {
-            play
-                .withLatestFrom(Observable.combineLatest(_playerItem, item))
-                .do(onNext: { [unowned self] (playerItem, item) in
-                    if playerItem.status == .failed {
-                        self._playerItem.onNext(item.toAVPlayerItem)
+
+            Observable.merge(
+                play
+                    .withLatestFrom(_playerItem)
+                    .filter { $0.status != .failed },
+
+                play
+                    .withLatestFrom(_playerItem)
+                    .filter { $0.status == .failed }
+                    .withLatestFrom(item)
+                    .map { $0.toAVPlayerItem }
+                    .do(onNext: { [unowned self] playerItem in
+                        self._playerItem.onNext(playerItem)
                         self.isItemReloadNeeded = true
-                    }
-                })
-                .do(onNext: { [unowned self] (playerItem, _) in
+                    })
+                )
+                .do(onNext: { [unowned self] playerItem in
                     if self.isItemReloadNeeded {
                         self.player.replaceCurrentItem(with: nil)
                         self.isItemReloadNeeded = false
