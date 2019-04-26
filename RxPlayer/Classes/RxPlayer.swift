@@ -287,8 +287,12 @@ extension RxPlayer {
         switch reason {
         case .oldDeviceUnavailable:
             guard let previousRoute = userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription else { return }
-            let headphonesConnected = previousRoute.outputs.map { $0.portType }.contains(.headphones)
-            DispatchQueue.main.async { headphonesConnected ? () : self.pause.onNext(()) }
+            let isHeadphonesUnavailable = previousRoute.outputs.map { $0.portType }.contains(.headphones)
+            DispatchQueue.main.async { isHeadphonesUnavailable ? self.pause.onNext(()) : () }
+//        case .newDeviceAvailable:
+//            guard let previousRoute = userInfo[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription else { return }
+//            let headphonesAvailable = previousRoute.outputs.map { $0.portType }.contains(.headphones)
+//            DispatchQueue.main.async { headphonesAvailable ? () : () }
         default: break
         }
     }
